@@ -1,0 +1,17 @@
+
+MCTEST COMMAND LINE OPTIONS
+	
+	-A: Program will abort on first error it encounters.
+
+	-B: Run benchmarks.  Executes MCFlow with a set of benchmark files, analyzing console output.
+	-Bsave: Record benchmark outputs to file.  
+	-Bclear: Permanently delete all benchmark data files.
+	-Bverb: Verbose benchmarking, will show much more output, including from MCFlow.
+
+	-D: Set directory of MCFlow.  This is required.  Directory can also be set in <DIR.txt>.
+
+	-H: Show this help file in console.
+
+
+	Example: ./mctest -B
+
