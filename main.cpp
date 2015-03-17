@@ -119,45 +119,51 @@ int main(int argc,char* argv[]) {
 	
 	if(benchmark_flags & BENCHMARK_FLAG::RUN_ALL) {
 	
-		std::cout << "Running benchmarks...\n";
-		
-		std::vector<Benchmark> benchmarks;
-		
-	//	float start_time = util::getTime(), end_time;
-		
-		benchmarks.push_back(Benchmark("arch10-1s", "synthetic1_on_arch10-1s"));
-		benchmarks.push_back(Benchmark("arch10-2s", "synthetic1_on_arch10-2s"));
-		benchmarks.push_back(Benchmark("arch20-1s", "synthetic2_on_arch20-1s"));
-		benchmarks.push_back(Benchmark("arch20-2s", "synthetic2_on_arch20-2s"));
-		benchmarks.push_back(Benchmark("arch30-1s", "synthetic3_on_arch30-1s"));
-		benchmarks.push_back(Benchmark("arch30-2s", "synthetic3_on_arch30-2s"));
-		benchmarks.push_back(Benchmark("arch40-1s", "synthetic4_on_arch40-1s"));
-		benchmarks.push_back(Benchmark("arch40-2s", "synthetic4_on_arch40-2s"));
-		benchmarks.push_back(Benchmark("arch50-1s", "synthetic5_on_arch50-1s"));
-		benchmarks.push_back(Benchmark("arch50-2s", "synthetic5_on_arch50-2s"));
-		benchmarks.push_back(Benchmark("archIVD1s", "in_vitro_diagnostics_on_archIVD1s"));
-		benchmarks.push_back(Benchmark("archIVD2s", "in_vitro_diagnostics_on_archIVD2s"));
-		benchmarks.push_back(Benchmark("archPCR1s", "PCR_on_archPCR1s"));
-		benchmarks.push_back(Benchmark("archPCR2s", "PCR_on_archPCR2s"));
-		benchmarks.push_back(Benchmark("archPCR3s", "PCR_on_archPCR3s"));
-		
-		bool benchmarks_failed = false;
-		
-		for(Benchmark bcm : benchmarks) {
-						
-			benchmarks_failed = !bcm.run(benchmark_flags);
-			if(benchmarks_failed) break;
-		}
-		
-		if(!benchmarks_failed) {
-		
-			std::cout << "Benchmarks completed successfully";
+		if(util::main_dir == "") {
+			std::cout << "Error: Cannot run benchmarks, directory not set!\n";
+			std::cout << "Use <./mctest -d \"../path/to/MCFlow/\"> to set.\n";
+		} else {
+	
+			std::cout << "Running benchmarks...\n";
 			
-		//	if(benchmarks_time) {
-		//		std::cout << " in " <<  (end_time - start_time);
-		//	}
+			std::vector<Benchmark> benchmarks;
+			
+		//	float start_time = util::getTime(), end_time;
+			
+			benchmarks.push_back(Benchmark("arch10-1s", "synthetic1_on_arch10-1s"));
+			benchmarks.push_back(Benchmark("arch10-2s", "synthetic1_on_arch10-2s"));
+			benchmarks.push_back(Benchmark("arch20-1s", "synthetic2_on_arch20-1s"));
+			benchmarks.push_back(Benchmark("arch20-2s", "synthetic2_on_arch20-2s"));
+			benchmarks.push_back(Benchmark("arch30-1s", "synthetic3_on_arch30-1s"));
+			benchmarks.push_back(Benchmark("arch30-2s", "synthetic3_on_arch30-2s"));
+			benchmarks.push_back(Benchmark("arch40-1s", "synthetic4_on_arch40-1s"));
+			benchmarks.push_back(Benchmark("arch40-2s", "synthetic4_on_arch40-2s"));
+			benchmarks.push_back(Benchmark("arch50-1s", "synthetic5_on_arch50-1s"));
+			benchmarks.push_back(Benchmark("arch50-2s", "synthetic5_on_arch50-2s"));
+			benchmarks.push_back(Benchmark("archIVD1s", "in_vitro_diagnostics_on_archIVD1s"));
+			benchmarks.push_back(Benchmark("archIVD2s", "in_vitro_diagnostics_on_archIVD2s"));
+			benchmarks.push_back(Benchmark("archPCR1s", "PCR_on_archPCR1s"));
+			benchmarks.push_back(Benchmark("archPCR2s", "PCR_on_archPCR2s"));
+			benchmarks.push_back(Benchmark("archPCR3s", "PCR_on_archPCR3s"));
+			
+			bool benchmarks_failed = false;
+			
+			for(Benchmark bcm : benchmarks) {
+							
+				benchmarks_failed = !bcm.run(benchmark_flags);
+				if(benchmarks_failed) break;
+			}
+			
+			if(!benchmarks_failed) {
+			
+				std::cout << "Benchmarks completed successfully";
 				
-			std::cout << ".\n";
+			//	if(benchmarks_time) {
+			//		std::cout << " in " <<  (end_time - start_time);
+			//	}
+					
+				std::cout << ".\n";
+			}
 		}
 	}
 	

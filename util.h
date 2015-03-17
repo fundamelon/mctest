@@ -25,6 +25,8 @@ namespace util {
 	
 	std::string runAndCapture(std::string);
 	
+	bool isValidDir(std::string);
+	
 	std::string readFromFile(std::string path);
 	bool writeToFile(std::string path, std::string data);
 	

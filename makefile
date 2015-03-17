@@ -27,4 +27,4 @@ test:
 	./mctest -A -B
 
 clean: 
-	rm *.o *.exe
+	rm *.o mctest

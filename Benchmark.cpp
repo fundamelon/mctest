@@ -149,15 +149,15 @@ bool Benchmark::run(int flags) {
 		
 		if(flags & BENCHMARK_FLAG::SAVE) {
 			if(saveExpectedData())
-				std::cout << "output recorded\n" << std::flush;
+				std::cout << "Output recorded\n" << std::flush;
 			else
 				std::cout << "Error: failed to save data\n";
 		} else if(output_ignore) {
-			std::cout << "Error: no data on file.  Run <./mcflow -Bsave> to save output snapshots.\n";
+			std::cout << "Error: no data on file.  Run <./mctest -Bsave> to save output snapshots.\n";
 		} else if(output_match) {
-			std::cout << "output match\n";
+			std::cout << "Output match\n";
 		} else {
-			std::cout << "output altered\n";
+			std::cout << "Output altered\n";
 			std::cout << "--- --- OUTPUT ANALYSIS:\n";
 			std::cout << output_comparison.str();
 		}
@@ -213,6 +213,13 @@ bool Benchmark::saveExpectedData() {
 	
 //	std::cout << path << "\n";
 	std::string path = "benchmark_data/";
+	
+	if(!util::isValidDir(path)) {
+		util::runAndCapture("mkdir benchmark_data");
+		if(!util::isValidDir(path)) return false;
+		else std::cout << "Created directory " << path << ". ";
+	}
+	
 	path.append(arch_file);
 	path.append(".txt");
 	

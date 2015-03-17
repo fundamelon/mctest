@@ -5,7 +5,9 @@
  */    
  
  
-#include <ctime>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h> // unix only
  
 #include <string>
 #include <vector>
@@ -13,8 +15,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <ctime>
  
 #include "util.h"
 
@@ -48,6 +49,15 @@ namespace util {
 		}
 		
 		return data;
+	}
+	
+	
+	// Check if directory exists
+	bool isValidDir(std::string path) {
+		
+		struct stat statbuf;
+		
+		return (stat(path.c_str(), &statbuf) == 0 && S_ISDIR(statbuf.st_mode));
 	}
 	
 	
