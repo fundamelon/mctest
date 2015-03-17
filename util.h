@@ -5,13 +5,18 @@
 #define ARCH_PATH "Benchmarks/Architecture/Synthetic/"
 #define APP_PATH "Benchmarks/Application/HighLevelSynthesis/OperationsScheduled/ops/"
 
+#define SGR_RESET 	"\033[0m"
+#define SGR_RED		"\033[1;31m"
+
 
 enum BENCHMARK_FLAG : int {
-	BENCHMARK_FLAG_VERBOSE 			= 1 << 0,	// verbose output
-	BENCHMARK_FLAG_SHOW_STATUS 		= 1 << 1,	// show progress bar
-	BENCHMARK_FLAG_ABORT_ON_ERR 	= 1 << 2,	// abort on an MCFlow error
-	BENCHMARK_FLAG_RECORD			= 1 << 3,	// parse and save benchmark outputs
-	BENCHMARK_FLAG_CLEAR 			= 1 << 4	// clear saved benchmark outputs
+	VERBOSE 		= 1 << 0,	// verbose output
+	SHOW_STATUS 	= 1 << 1,	// show progress bar
+	ABORT_ON_ERR 	= 1 << 2,	// abort on an MCFlow error
+	SAVE			= 1 << 3,	// parse and save benchmark outputs
+	CLEAR 			= 1 << 4,	// clear saved benchmark outputs
+	RUN_ALL			= 1 << 5,	// Run all default benchmark files
+	ANALYZE_OUTPUT	= 1 << 6	// Print output analysis on benchmark conclusion
 };
 
 namespace util {
@@ -23,7 +28,8 @@ namespace util {
 	std::string readFromFile(std::string path);
 	bool writeToFile(std::string path, std::string data);
 	
-	std::vector<std::string> regexSearch(std::string data, std::string regex);
+	std::vector<std::string> regexSearch(std::string data, std::string regex_param);
+	std::string regexSingleSearch(std::string data, std::string regex_param);
 	
 	bool setProgramDir(std::string);
 	

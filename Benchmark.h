@@ -13,6 +13,7 @@ public:
 private:
 	
 	std::map<std::string, std::string> getExpectedData();
+	bool saveExpectedData();
 	
 	// TODO: make this user-accessible
 	std::vector<std::string> benchmark_data_fields = {

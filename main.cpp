@@ -26,12 +26,7 @@ bool automation_enabled = false;
 int benchmark_flags = 0;
 
 bool benchmarks_enabled = false;
-bool benchmarks_record = false;
-bool benchmarks_verbose = false;
-bool benchmarks_status = false;
 bool benchmarks_time = false;
-bool benchmarks_failed = false;
-bool benchmarks_clear = false;
 
 
  
@@ -46,24 +41,26 @@ int main(int argc,char* argv[]) {
 	util::init();
 	
 	// parse command line options
+	// TODO: custom implementation, not dependant on getopt (allow --A=B syntax)
 	int c;
 	opterr = 0;
 	
-	while((c = getopt(argc, argv, "AB::D:H")) != -1) {
+	while((c = getopt(argc, argv, "AaB::b::D:d:Hh")) != -1) {
 		std::string arg = (optarg != NULL ? optarg : "");
-		c = toupper(c);
 		switch(c) {
 				// set to abort on unsuccessful run
 				case 'A':
+				case 'a':
 					abort_enabled = true;
 					break;
 					
 				// set to run benchmarks
 				case 'B':
-					benchmarks_enabled = true;
-					if(arg == "verb") 		benchmark_flags |= BENCHMARK_FLAG_VERBOSE;
-					else if(arg == "save") 	benchmark_flags |= BENCHMARK_FLAG_RECORD;
-					else if(arg == "clear") benchmark_flags |= BENCHMARK_FLAG_CLEAR; // clear output data
+				case 'b':
+					benchmark_flags |= BENCHMARK_FLAG::RUN_ALL;
+					if(arg == "verb") 		benchmark_flags |= BENCHMARK_FLAG::VERBOSE;
+					else if(arg == "save") 	benchmark_flags |= BENCHMARK_FLAG::SAVE;
+					else if(arg == "clear") benchmark_flags |= BENCHMARK_FLAG::CLEAR;
 					else if(arg != "") { // exit if invalid
 						std::cout << "Invalid argument \"" << arg << "\".\n";
 						return 1;
@@ -72,6 +69,7 @@ int main(int argc,char* argv[]) {
 					
 				// set directory option (TODO: check if valid)
 				case 'D':
+				case 'd':
 					if(util::main_dir == "") std::cout << "Changing";
 					else std::cout << "Setting new";
 					std::cout << " directory.\n";
@@ -81,6 +79,7 @@ int main(int argc,char* argv[]) {
 					
 				// print help
 				case 'H':
+				case 'h':
 					std::cout << util::readFromFile("help.txt");
 					return 1;
 					
@@ -111,14 +110,14 @@ int main(int argc,char* argv[]) {
 	std::cout << (util::main_dir == "" ? "(not set)" : util::main_dir) << "\n\n";
 	
 		
-	if(benchmarks_verbose) std::cout << "Benchmarks set to verbose.\n";
-	if(benchmarks_record) std::cout << "Benchmarks will record output.\n";
+	if(benchmark_flags & BENCHMARK_FLAG::VERBOSE) std::cout << "Benchmarks set to verbose.\n";
+	if(benchmark_flags & BENCHMARK_FLAG::SAVE) std::cout << "Benchmarks will record output.\n";
 	
 	
 	//Run benchmarks
 	//TODO: Move elsewhere, organize.
 	
-	if(benchmarks_enabled) {
+	if(benchmark_flags & BENCHMARK_FLAG::RUN_ALL) {
 	
 		std::cout << "Running benchmarks...\n";
 		
@@ -141,6 +140,8 @@ int main(int argc,char* argv[]) {
 		benchmarks.push_back(Benchmark("archPCR1s", "PCR_on_archPCR1s"));
 		benchmarks.push_back(Benchmark("archPCR2s", "PCR_on_archPCR2s"));
 		benchmarks.push_back(Benchmark("archPCR3s", "PCR_on_archPCR3s"));
+		
+		bool benchmarks_failed = false;
 		
 		for(Benchmark bcm : benchmarks) {
 						

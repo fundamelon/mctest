@@ -91,7 +91,7 @@ namespace util {
 	// Overwrites dir.txt with new directory
 	bool setProgramDir(std::string new_dir) {
 		
-		return writeToFile("dir.txt", new_dir);
+		return writeToFile("dir.txt", new_dir); 
 	}
 	
 	
@@ -113,21 +113,12 @@ namespace util {
 	}
 	
 	
-	// Writes a map of benchmark data into a corresponding data file.
-	bool setBenchmarkExpectedData(std::string benchmark_name, std::map<std::string, std::string> map_from_benchmark) {
+	// simple wrapper to take care of returning only first result, with error checking.
+	std::string regexSingleSearch(std::string data, std::string regex_param) {
 		
-		std::stringstream file_contents;
-		
-	//	std::cout << path << "\n";
-		std::string path = "benchmark_data/";
-		path.append(benchmark_name);
-		path.append(".txt");
-		
-		for(auto p : map_from_benchmark) {
-			file_contents << p.first << " " << p.second << "\n";
-		}
-		
-		return writeToFile(path, file_contents.str());
+		auto match_set = regexSearch(data, regex_param);
+		if(match_set.size() == 0) return "";
+		return match_set.at(0);
 	}
 	
 	
