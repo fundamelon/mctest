@@ -8,8 +8,15 @@
 #define SGR_RESET 	"\033[0m"
 #define SGR_RED		"\033[1;31m"
 
+// necessary for types
+#include <string>
+#include <vector>
+#include <map>
+
+
 enum BENCHMARK_FLAG : int {
-	RUN_ALL			= 1 << 0	// Run all default benchmark files
+	RUN_ALL			= 1 << 0,	// Run all default benchmark files
+	RUN_SINGLE		= 1 << 1	// Run only one test
 }; 
 
 enum TEST_FLAG : int {
@@ -18,7 +25,8 @@ enum TEST_FLAG : int {
 	ABORT_ON_ERR 	= 1 << 2,	// abort on an MCFlow error
 	SAVE			= 1 << 3,	// parse and save test output
 	CLEAR 			= 1 << 4,	// clear saved test output
-	ANALYZE_OUTPUT	= 1 << 5	// Print output analysis on test conclusion
+	ANALYZE_OUTPUT	= 1 << 5,	// Print output analysis on test conclusion
+	SELF			= 1 << 6
 };
 
 namespace util {

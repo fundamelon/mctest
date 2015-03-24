@@ -8,14 +8,11 @@
 //TODO: remove dependency on cout
 #include <iostream>
  
-#include <string>
 #include <sstream>
 #include <iomanip>
-#include <vector>
-#include <map>
 #include <cmath>
  
-#include "util.h"
+#include "util.h" // includes <string>, <vector>, <map>
 #include "Test.h"
 
 	 

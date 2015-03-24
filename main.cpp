@@ -10,13 +10,9 @@
 #include <ctype.h>
 
 #include <iostream>
-#include <string>
-#include <vector>
-#include <map>
 
-#include "util.h"
+#include "util.h" // includes <string>, <vector>, <map>
 #include "Benchmark.h"
-#include "Test.h"
  
  //Flags 
  // TODO: make these actual flags :(
@@ -31,25 +27,46 @@ bool benchmarks_enabled = false;
 bool test_time = false;
 
 
+// Array and indexing enum for subopts
+enum {
+	OPT_TEST_VERB = 0,
+	OPT_TEST_SAVE,
+	OPT_TEST_CLEAR,
+	OPT_TEST_ARCH,
+	OPT_TEST_APP,
+	OPT_TEST_SELF
+};
+
+const char *opt_map[] = {
+	[OPT_TEST_VERB] = "verb",
+	[OPT_TEST_SAVE] = "save",
+	[OPT_TEST_CLEAR] = "clear",
+	[OPT_TEST_ARCH] = "ARCH",
+	[OPT_TEST_APP] = "APP",
+	[OPT_TEST_SELF] = "test",
+	NULL
+};
  
  
-int main(int argc,char* argv[]) {
+int main(int argc,char *argv[]) {
 	
 	//TODO: All COUT are temporary.  Create custom stream that also
 	//	redirects to a log file.
 	
 	std::cout << "\n-- MCFlow Test Harness --\n\n";
 	
-	util::init();
 	
 	// parse command line options
-	// TODO: custom implementation, not dependant on getopt (allow --A=B syntax)
-	int c;
+	char *subopts, *value;
+	int opt;
 	opterr = 0;
 	
-	while((c = getopt(argc, argv, "AaBbD:d:HhT::t::")) != -1) {
+	bool test_single = false;
+	std::string test_arch, test_app;
+	
+	while((opt = getopt(argc, argv, "AaBbD:d:HhT:t:")) != -1) {
 		std::string arg = (optarg != NULL ? optarg : "");
-		switch(c) {
+		switch(opt) {
 				// set to abort on unsuccessful run
 				case 'A':
 				case 'a':
@@ -64,12 +81,36 @@ int main(int argc,char* argv[]) {
 					
 				case 'T':
 				case 't':
-					if(arg == "verb") 		test_flags |= TEST_FLAG::VERBOSE;
-					else if(arg == "save") 	test_flags |= TEST_FLAG::SAVE;
-					else if(arg == "clear") test_flags |= TEST_FLAG::CLEAR;
-					else if(arg != "") { // exit if invalid
-						std::cout << "Invalid argument \"" << arg << "\".\n";
-						return 1;
+					subopts = optarg;
+					while(*subopts != '\0') {
+						switch(getsubopt(&subopts, (char **)opt_map, &value)) {
+							case OPT_TEST_VERB:
+								test_flags |= TEST_FLAG::VERBOSE;
+								break;
+							case OPT_TEST_SAVE:
+								test_flags |= TEST_FLAG::SAVE;
+								break;
+							case OPT_TEST_CLEAR:
+								test_flags |= TEST_FLAG::CLEAR;
+								break;
+							case OPT_TEST_ARCH:
+								if(value == NULL) abort();
+								test_single = true;
+								test_arch = value;
+								break;
+							case OPT_TEST_APP:
+								if(value == NULL) abort();
+								test_single = true;
+								test_app = value;
+								break;
+							case OPT_TEST_SELF:
+								test_flags |= TEST_FLAG::SELF;
+								break;
+							default:
+						std::cout << "TEST\n";	
+								std::cout << "Invalid argument \"" << value << "\".\n";
+								return 1;
+						}
 					}
 					break;
 					
@@ -106,72 +147,36 @@ int main(int argc,char* argv[]) {
 		}
 	}
 	
+	util::init();
+	
 	if(util::main_dir == "") {
 		std::cout << "Load from previous directory...\n";
 	} else if(util::main_dir[util::main_dir.length()-1] == '\n') {
 		util::main_dir.erase(util::main_dir.length()-1); // strip newline
 	}
 
-	std::cout << "MCFlow Directory: ";
+	std::cout << "*** MCFlow Directory: ";
 	std::cout << (util::main_dir == "" ? "(not set)" : util::main_dir) << "\n\n";
 	
+	// Benchmark setup
+	Benchmark bench;
+	
+	if(test_flags & TEST_FLAG::VERBOSE) std::cout << "*** Tests set to verbose.\n";
+	if(test_flags & TEST_FLAG::SAVE) std::cout << "*** Tests will record output.\n";
+	
+	if(test_arch != "") std::cout << "*** Test arch file: " << test_arch << '\n';
+	else if(test_single) std::cout << "*** ERROR: Please specify an arch path with the app path.\n";
+	
+	if(test_app != "") std::cout << "*** Test app file: " << test_app << '\n';
+	else if(test_single) std::cout << "*** ERROR: Please specify an arch path with the app path.\n";
+	
+	if(test_arch != "" && test_app != "") benchmark_flags |= BENCHMARK_FLAG::RUN_SINGLE;
+	
+	
+	bench.setTestPaths(test_arch, test_app); // ignored if benchmarking all
+	bench.setRepeatAmount(1);
 		
-	if(test_flags & TEST_FLAG::VERBOSE) std::cout << "Tests set to verbose.\n";
-	if(test_flags & TEST_FLAG::SAVE) std::cout << "Tests will record output.\n";
-	
-	
-	//Run benchmarks
-	//TODO: Move elsewhere, organize.
-	
-	if(benchmark_flags & BENCHMARK_FLAG::RUN_ALL) {
-	
-		if(util::main_dir == "") {
-			std::cout << "Error: Cannot run tests, directory not set!\n";
-			std::cout << "Use <./mctest -d \"../path/to/MCFlow/\"> to set.\n";
-		} else {
-	
-			std::cout << "Running benchmarks...\n";
-			
-			std::vector<Test> tests;
-			
-		//	float start_time = util::getTime(), end_time;
-			
-			tests.push_back(Test("arch10-1s", "synthetic1_on_arch10-1s"));
-			tests.push_back(Test("arch10-2s", "synthetic1_on_arch10-2s"));
-			tests.push_back(Test("arch20-1s", "synthetic2_on_arch20-1s"));
-			tests.push_back(Test("arch20-2s", "synthetic2_on_arch20-2s"));
-			tests.push_back(Test("arch30-1s", "synthetic3_on_arch30-1s"));
-			tests.push_back(Test("arch30-2s", "synthetic3_on_arch30-2s"));
-			tests.push_back(Test("arch40-1s", "synthetic4_on_arch40-1s"));
-			tests.push_back(Test("arch40-2s", "synthetic4_on_arch40-2s"));
-			tests.push_back(Test("arch50-1s", "synthetic5_on_arch50-1s"));
-			tests.push_back(Test("arch50-2s", "synthetic5_on_arch50-2s"));
-			tests.push_back(Test("archIVD1s", "in_vitro_diagnostics_on_archIVD1s"));
-			tests.push_back(Test("archIVD2s", "in_vitro_diagnostics_on_archIVD2s"));
-			tests.push_back(Test("archPCR1s", "PCR_on_archPCR1s"));
-			tests.push_back(Test("archPCR2s", "PCR_on_archPCR2s"));
-			tests.push_back(Test("archPCR3s", "PCR_on_archPCR3s"));
-			
-			bool tests_failed = false;
-			
-			for(auto t : tests) {
-							
-				tests_failed = !t.run(test_flags);
-				if(tests_failed) break;
-			}
-			
-			if(!tests_failed) {
-			
-				std::cout << "Benchmark completed successfully";
-				
-			//	if(benchmarks_time) {
-			//		std::cout << " in " <<  (end_time - start_time);
-			//	}
-					
-				std::cout << ".\n";
-			}
-		}
-	}
+	bench.run(benchmark_flags, test_flags);
 	
 	// dump output to log
 //	util::writeToFile("log.txt", output_capture.str());

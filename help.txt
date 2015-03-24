@@ -1,17 +1,43 @@
 
-MCTEST COMMAND LINE OPTIONS
+	MCTEST USAGE GUIDE
 	
 	-A: Program will abort on first error it encounters.
 
-	-B: Run benchmarks.  Executes MCFlow with a set of benchmark files, analyzing console output.
-	-Bsave: Record benchmark outputs to file.  
-	-Bclear: Permanently delete all benchmark data files.
-	-Bverb: Verbose benchmarking, will show much more output, including from MCFlow.
+	-B: Run a predetermined set of benchmarks.
+			
+			Example: ./mctest -B
 
-	-D: Set directory of MCFlow.  This is required.  Directory can also be set in <DIR.txt>.
+	-D: Set directory of MCFlow.  This is required.  
+		Directory can also be set in <DIR.txt>.
 
+			Example: ./mctest -D "path/to/MCFlow/"
+			
+	-Darch: (TODO) Set architecture file directory.
+	-Dapp: (TODO) Set application file directory.
+	
 	-H: Show this help file in console.
+	
+	-T: Run single test.  This has priority over benchmarks.
+		Required arguments:
+		 ARCH: Architecture file path
+		 APP: Application file path
+			
+			Example: -T ARCH="arch_file_name",APP="app_file_name"
+			
+	-Tabs: (TODO) ARCH and APP paths are absolute. (TODO)
+		
+	TEST FLAGS: These apply to all runs regardless of setup.
+	-Tsave:  Flag to parse and save console output to file. Required 
+		     for analysis (for now).
+	-Tclear: Flag to delete output file.
+	-Tverb:  Flag for erbose test output - includes command line 
+	         args and MCFlow output.
+	-Ttest:  Test the tester with a test run (arch10-1s).
+	
+	(First letter of options is not case sensitive.)
 
 
-	Example: ./mctest -B
-
+	Recommended starting points:
+	
+		./mctest -D "path/to/MCFlow/" -B -Bsave
+		./mctest -Ttest -Tsave
