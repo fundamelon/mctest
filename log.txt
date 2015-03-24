@@ -1,0 +1,26 @@
+
+-- MCFlow Test Harness --
+
+*** settings.dat does not exist, creating... done
+MCFlow Directory: ../UCR_MCFlow_dev/
+
+Running benchmarks...
+--- arch10-1s: Output match
+--- arch10-2s: Output altered
+--- --- OUTPUT ANALYSIS:
+--- --- Height: Expected <200>, got <190> (5% decrease)
+--- --- Component Area: Expected <15941>, got <15995> (0.34% increase)
+--- arch20-1s: Output match
+--- arch20-2s: Output match
+--- arch30-1s: Output match
+--- arch30-2s: Output match
+--- arch40-1s: Output match
+--- arch40-2s: Output match
+--- arch50-1s: Output match
+--- arch50-2s: Output match
+--- archIVD1s: Output match
+--- archIVD2s: Output match
+--- archPCR1s: Output match
+--- archPCR2s: Output match
+--- archPCR3s: Output match
+Benchmarks completed successfully.

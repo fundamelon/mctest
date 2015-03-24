@@ -22,12 +22,23 @@
 namespace util {
 	
 	std::string main_dir = "";
+	std::map<std::string, std::string> settings_map;
 	
 	// Initialize
 	void init() {
 		
 		// read mcflow directory from file
 		main_dir = readFromFile("dir.txt");
+		
+		// parse settings
+		parseSettingsFile();
+	}
+	
+	
+	// Save and exit
+	void close() {
+		
+		writeSettingsFile();
 	}
 	
 	// Executes a command in terminal, and records its output.
@@ -53,7 +64,7 @@ namespace util {
 	
 	
 	// Check if directory exists
-	bool isValidDir(std::string path) {
+	bool isValidDir(const std::string& path) {
 		
 		struct stat statbuf;
 		
@@ -62,7 +73,7 @@ namespace util {
 	
 	
 	// Simple function to read plain text file to string.
-	std::string readFromFile(std::string path) {
+	std::string readFromFile(const std::string& path) {
 		
 		std::string data = "";
 		
@@ -99,7 +110,7 @@ namespace util {
 	
 	
 	// Overwrites dir.txt with new directory
-	bool setProgramDir(std::string new_dir) {
+	bool setProgramDir(const std::string& new_dir) {
 		
 		return writeToFile("dir.txt", new_dir); 
 	}
@@ -129,6 +140,47 @@ namespace util {
 		auto match_set = regexSearch(data, regex_param);
 		if(match_set.size() == 0) return "";
 		return match_set.at(0);
+	}
+	
+	
+	// Create settings.dat
+	bool createSettingsFile() {
+		
+		runAndCapture(">> settings.dat");
+		
+		return true;
+	}
+	
+	
+	// Read and parse data from settings.dat
+	bool parseSettingsFile() {
+		
+		std::string settings_text = readFromFile("settings.dat");
+		if(settings_text == "") {
+			std::cout << "*** settings.dat does not exist, creating...";
+			if(createSettingsFile())
+				std::cout << " done\n";
+			else {
+				std::cout << " ERROR: Could not create settings.dat\n";
+				return false;
+			}
+		}
+		
+		std::string regex_text = "=[a-zA-Z]*";
+		
+		std::vector<std::string> settings_data = regexSearch(settings_text, regex_text);
+		
+		for(auto s : settings_data) {
+			
+		}
+		
+		return true;
+	}
+	
+	
+	bool writeSettingsFile() {
+		
+		return true;
 	}
 	
 	

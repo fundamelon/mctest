@@ -1,5 +1,7 @@
 mctest
 benchmark_data/*
+test_data/*
 dir.txt
 *.o
+*.d
 *~

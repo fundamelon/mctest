@@ -16,6 +16,7 @@
 
 #include "util.h"
 #include "Benchmark.h"
+#include "Test.h"
  
  //Flags 
  // TODO: make these actual flags :(
@@ -23,10 +24,11 @@ bool abort_enabled = false;
 
 bool automation_enabled = false;
 
+int test_flags = 0;
 int benchmark_flags = 0;
 
 bool benchmarks_enabled = false;
-bool benchmarks_time = false;
+bool test_time = false;
 
 
  
@@ -45,7 +47,7 @@ int main(int argc,char* argv[]) {
 	int c;
 	opterr = 0;
 	
-	while((c = getopt(argc, argv, "AaB::b::D:d:Hh")) != -1) {
+	while((c = getopt(argc, argv, "AaBbD:d:HhT::t::")) != -1) {
 		std::string arg = (optarg != NULL ? optarg : "");
 		switch(c) {
 				// set to abort on unsuccessful run
@@ -58,9 +60,13 @@ int main(int argc,char* argv[]) {
 				case 'B':
 				case 'b':
 					benchmark_flags |= BENCHMARK_FLAG::RUN_ALL;
-					if(arg == "verb") 		benchmark_flags |= BENCHMARK_FLAG::VERBOSE;
-					else if(arg == "save") 	benchmark_flags |= BENCHMARK_FLAG::SAVE;
-					else if(arg == "clear") benchmark_flags |= BENCHMARK_FLAG::CLEAR;
+					break;
+					
+				case 'T':
+				case 't':
+					if(arg == "verb") 		test_flags |= TEST_FLAG::VERBOSE;
+					else if(arg == "save") 	test_flags |= TEST_FLAG::SAVE;
+					else if(arg == "clear") test_flags |= TEST_FLAG::CLEAR;
 					else if(arg != "") { // exit if invalid
 						std::cout << "Invalid argument \"" << arg << "\".\n";
 						return 1;
@@ -110,8 +116,8 @@ int main(int argc,char* argv[]) {
 	std::cout << (util::main_dir == "" ? "(not set)" : util::main_dir) << "\n\n";
 	
 		
-	if(benchmark_flags & BENCHMARK_FLAG::VERBOSE) std::cout << "Benchmarks set to verbose.\n";
-	if(benchmark_flags & BENCHMARK_FLAG::SAVE) std::cout << "Benchmarks will record output.\n";
+	if(test_flags & TEST_FLAG::VERBOSE) std::cout << "Tests set to verbose.\n";
+	if(test_flags & TEST_FLAG::SAVE) std::cout << "Tests will record output.\n";
 	
 	
 	//Run benchmarks
@@ -120,43 +126,43 @@ int main(int argc,char* argv[]) {
 	if(benchmark_flags & BENCHMARK_FLAG::RUN_ALL) {
 	
 		if(util::main_dir == "") {
-			std::cout << "Error: Cannot run benchmarks, directory not set!\n";
+			std::cout << "Error: Cannot run tests, directory not set!\n";
 			std::cout << "Use <./mctest -d \"../path/to/MCFlow/\"> to set.\n";
 		} else {
 	
 			std::cout << "Running benchmarks...\n";
 			
-			std::vector<Benchmark> benchmarks;
+			std::vector<Test> tests;
 			
 		//	float start_time = util::getTime(), end_time;
 			
-			benchmarks.push_back(Benchmark("arch10-1s", "synthetic1_on_arch10-1s"));
-			benchmarks.push_back(Benchmark("arch10-2s", "synthetic1_on_arch10-2s"));
-			benchmarks.push_back(Benchmark("arch20-1s", "synthetic2_on_arch20-1s"));
-			benchmarks.push_back(Benchmark("arch20-2s", "synthetic2_on_arch20-2s"));
-			benchmarks.push_back(Benchmark("arch30-1s", "synthetic3_on_arch30-1s"));
-			benchmarks.push_back(Benchmark("arch30-2s", "synthetic3_on_arch30-2s"));
-			benchmarks.push_back(Benchmark("arch40-1s", "synthetic4_on_arch40-1s"));
-			benchmarks.push_back(Benchmark("arch40-2s", "synthetic4_on_arch40-2s"));
-			benchmarks.push_back(Benchmark("arch50-1s", "synthetic5_on_arch50-1s"));
-			benchmarks.push_back(Benchmark("arch50-2s", "synthetic5_on_arch50-2s"));
-			benchmarks.push_back(Benchmark("archIVD1s", "in_vitro_diagnostics_on_archIVD1s"));
-			benchmarks.push_back(Benchmark("archIVD2s", "in_vitro_diagnostics_on_archIVD2s"));
-			benchmarks.push_back(Benchmark("archPCR1s", "PCR_on_archPCR1s"));
-			benchmarks.push_back(Benchmark("archPCR2s", "PCR_on_archPCR2s"));
-			benchmarks.push_back(Benchmark("archPCR3s", "PCR_on_archPCR3s"));
+			tests.push_back(Test("arch10-1s", "synthetic1_on_arch10-1s"));
+			tests.push_back(Test("arch10-2s", "synthetic1_on_arch10-2s"));
+			tests.push_back(Test("arch20-1s", "synthetic2_on_arch20-1s"));
+			tests.push_back(Test("arch20-2s", "synthetic2_on_arch20-2s"));
+			tests.push_back(Test("arch30-1s", "synthetic3_on_arch30-1s"));
+			tests.push_back(Test("arch30-2s", "synthetic3_on_arch30-2s"));
+			tests.push_back(Test("arch40-1s", "synthetic4_on_arch40-1s"));
+			tests.push_back(Test("arch40-2s", "synthetic4_on_arch40-2s"));
+			tests.push_back(Test("arch50-1s", "synthetic5_on_arch50-1s"));
+			tests.push_back(Test("arch50-2s", "synthetic5_on_arch50-2s"));
+			tests.push_back(Test("archIVD1s", "in_vitro_diagnostics_on_archIVD1s"));
+			tests.push_back(Test("archIVD2s", "in_vitro_diagnostics_on_archIVD2s"));
+			tests.push_back(Test("archPCR1s", "PCR_on_archPCR1s"));
+			tests.push_back(Test("archPCR2s", "PCR_on_archPCR2s"));
+			tests.push_back(Test("archPCR3s", "PCR_on_archPCR3s"));
 			
-			bool benchmarks_failed = false;
+			bool tests_failed = false;
 			
-			for(Benchmark bcm : benchmarks) {
+			for(auto t : tests) {
 							
-				benchmarks_failed = !bcm.run(benchmark_flags);
-				if(benchmarks_failed) break;
+				tests_failed = !t.run(test_flags);
+				if(tests_failed) break;
 			}
 			
-			if(!benchmarks_failed) {
+			if(!tests_failed) {
 			
-				std::cout << "Benchmarks completed successfully";
+				std::cout << "Benchmark completed successfully";
 				
 			//	if(benchmarks_time) {
 			//		std::cout << " in " <<  (end_time - start_time);

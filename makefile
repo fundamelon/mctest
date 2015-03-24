@@ -5,26 +5,29 @@
 #
 #
 # Usage:
-#	Super rudimentary makefile
+#	Use 'make test' to fully test the program
 #
 
-FLAGS = -W -Wall -pedantic -ansi -std=c++11
+CXX = g++
+CXXFLAGS = -W -Wall -pedantic -ansi -std=c++11
+BIN = obj
 
-mctest.exe: main.o util.o Benchmark.o
-	g++ $(FLAGS) -o mctest main.o util.o Benchmark.o
+DEPS = util.h Benchmark.h Test.h
 
-main.o: main.cpp
-	g++ $(FLAGS) -c main.cpp
+OBJ = main.o util.o Benchmark.o Test.o
 
-util.o: util.cpp
-	g++ $(FLAGS) -c util.cpp
-	
-Benchmark.o: Benchmark.cpp
-	g++ $(FLAGS) -c Benchmark.cpp
+%.o: %.cpp $(DEPS)
+	$(CXX) -MMD -c -o $@ $< $(CXXFLAGS)
+
+mctest: main.o util.o Benchmark.o Test.o
+	$(CXX) -o mctest main.o util.o Benchmark.o Test.o $(CXXFLAGS) 
+
 	
 test:
 	make
 	./mctest -A -B
 
+.PHONY: clean
 clean: 
-	rm *.o mctest
+	rm -f *.o *~ mctest
+	rm obj

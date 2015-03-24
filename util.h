@@ -8,38 +8,44 @@
 #define SGR_RESET 	"\033[0m"
 #define SGR_RED		"\033[1;31m"
 
-
 enum BENCHMARK_FLAG : int {
+	RUN_ALL			= 1 << 0	// Run all default benchmark files
+}; 
+
+enum TEST_FLAG : int {
 	VERBOSE 		= 1 << 0,	// verbose output
 	SHOW_STATUS 	= 1 << 1,	// show progress bar
 	ABORT_ON_ERR 	= 1 << 2,	// abort on an MCFlow error
-	SAVE			= 1 << 3,	// parse and save benchmark outputs
-	CLEAR 			= 1 << 4,	// clear saved benchmark outputs
-	RUN_ALL			= 1 << 5,	// Run all default benchmark files
-	ANALYZE_OUTPUT	= 1 << 6	// Print output analysis on benchmark conclusion
+	SAVE			= 1 << 3,	// parse and save test output
+	CLEAR 			= 1 << 4,	// clear saved test output
+	ANALYZE_OUTPUT	= 1 << 5	// Print output analysis on test conclusion
 };
 
 namespace util {
 	
 	extern std::string main_dir;
+	extern std::map<std::string, std::string> settings_map;
 	
 	std::string runAndCapture(std::string);
 	
-	bool isValidDir(std::string);
+	bool isValidDir(const std::string&);
 	
-	std::string readFromFile(std::string path);
+	std::string readFromFile(const std::string& path);
 	bool writeToFile(std::string path, std::string data);
 	
 	std::vector<std::string> regexSearch(std::string data, std::string regex_param);
 	std::string regexSingleSearch(std::string data, std::string regex_param);
 	
-	bool setProgramDir(std::string);
+	bool setProgramDir(const std::string&);
+	
+	bool createSettingsFile();
+	bool parseSettingsFile();
+	bool writeSettingsFile();
 	
 	float getTime();
 	
 	void init();
-	
-	bool setBenchmarkExpectedData(std::string, std::map<std::string, std::string>);
+	void close();
 }
 
 
