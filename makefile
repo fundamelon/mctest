@@ -10,24 +10,33 @@
 
 CXX = g++
 CXXFLAGS = -W -Wall -pedantic -ansi -std=c++11
-BIN = obj
 
 DEPS = util.h Benchmark.h Test.h
 
-OBJ = main.o util.o Benchmark.o Test.o
+MKDIR_P = mkdir -p
+ODIR = bin/
 
-%.o: %.cpp $(DEPS)
+OBJ = $(addprefix $(ODIR), main.o util.o Benchmark.o Test.o )
+
+.PHONY: all
+all:
+	$(MKDIR_P) $(ODIR)
+	make mctest
+
+$(ODIR)%.o: %.cpp
 	$(CXX) -MMD -c -o $@ $< $(CXXFLAGS)
 
-mctest: main.o util.o Benchmark.o Test.o
-	$(CXX) -o mctest main.o util.o Benchmark.o Test.o $(CXXFLAGS) 
+mctest: $(OBJ)
+	$(CXX) -o mctest $(OBJ) $(CXXFLAGS) 
 
-	
+
+.PHONY: test
 test:
 	make
+#	clear
 	./mctest -A -B
 
 .PHONY: clean
 clean: 
-	rm -f *.o *~ mctest
-	rm obj
+	rm -f *.o *.d mctest *~
+	rm -rf $(ODIR)
